@@ -1,0 +1,6 @@
+.vercel
+node_modules
+dist
+verdent-design
+vite-react-tailwind
+.DS_Store
