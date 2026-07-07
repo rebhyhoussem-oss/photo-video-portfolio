@@ -75,13 +75,6 @@ function CampaignCard({ item }: { item: MediaItem }) {
           </div>
         </div>
       )}
-
-      {/* Label */}
-      {!playing && (
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-5">
-          <p className="font-display text-lg font-semibold text-white">{item.title}</p>
-        </div>
-      )}
     </motion.div>
   )
 }

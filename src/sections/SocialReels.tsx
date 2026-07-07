@@ -80,11 +80,6 @@ function ReelCard({ item }: { item: MediaItem }) {
           </div>
         </div>
       )}
-
-      {/* Label */}
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-4">
-        <p className="text-sm font-semibold text-white">{item.title}</p>
-      </div>
     </motion.div>
   )
 }

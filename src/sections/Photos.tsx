@@ -43,11 +43,6 @@ function PhotoCard({ item, index }: { item: MediaItem; index: number }) {
           <div className="h-14 w-14 rounded-full border-2 border-teal/30" />
         </div>
       )}
-
-      {/* Label */}
-      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-4 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-        <p className="text-sm font-semibold text-white">{item.title}</p>
-      </div>
     </motion.div>
   )
 }
