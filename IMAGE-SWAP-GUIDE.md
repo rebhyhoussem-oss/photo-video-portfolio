@@ -1,12 +1,13 @@
-# How to Replace Images & Videos with Your Real Content
+# How to Add Images & Videos — Fully Automatic, Zero Code Edits
 
-**The simplest way:** just name your files exactly as listed below and
-upload them into the matching folder on GitHub. If you use the exact
-filenames, **you don't need to edit any code at all** — the site will pick
-them up automatically on the next deploy.
+**The simplest way:** just upload your file into the matching folder on
+GitHub, named the **next number in sequence**. The site scans these
+folders automatically at build time — **there is no code to edit, ever**,
+for local files. Push it, and it appears live after the next auto-deploy
+(about a minute).
 
-**Important — Reels & Campaigns are now VIDEO sections.** Upload actual
-video files (`.mp4`) there, not images. Photos and Hero remain image-only.
+**Important — Reels & Campaigns are VIDEO sections.** Upload actual video
+files (`.mp4`) there, not images. Photos and Hero remain image-only.
 
 Each folder also has its own `README.md` with the same instructions, in
 case you land there directly from GitHub's file browser.
@@ -16,21 +17,26 @@ case you land there directly from GitHub's file browser.
 1. Go to the repo on GitHub: `github.com/rebhyhoussem-oss/photo-video-portfolio`
 2. Open the folder you want (e.g. `public/images/reels`)
 3. Click **"Add file" → "Upload files"**
-4. Drag in your file(s), named exactly as shown in the table below
+4. Drag in your file, named the next number in sequence (see table below)
 5. Click **"Commit changes"** — the live site updates automatically within
-   about a minute (no further steps needed)
+   about a minute (no further steps needed, no `media.ts` edit needed)
 
-## Exact Filenames Expected
+## Filenames to Use (just pick the next number)
 
-| Folder | Type | Files to upload |
-|---|---|---|
-| `public/images/hero/` | Image | `hero-background.png` |
-| `public/images/reels/` | **Video** | `reel-01.mp4`, `reel-02.mp4`, `reel-03.mp4`, `reel-04.mp4` |
-| `public/images/campaigns/` | **Video** | `campaign-01.mp4`, `campaign-02.mp4`, `campaign-03.mp4` |
-| `public/images/photos/` | Image | `photo-01.jpg`, `photo-02.jpg`, `photo-03.jpg`, `photo-04.jpg`, `photo-05.jpg`, `photo-06.jpg` |
+| Folder | Type | Naming pattern | Currently live |
+|---|---|---|---|
+| `public/images/hero/` | Image | `hero-background.png` (single file, no numbering) | 1 file |
+| `public/images/reels/` | **Video** | `reel-01.mp4`, `reel-02.mp4`, `reel-03.mp4`... | 6 files (up to reel-06.mp4) |
+| `public/images/campaigns/` | **Video** | `campaign-01.mp4`, `campaign-02.mp4`... | 0 files (add your first) |
+| `public/images/photos/` | Image | `photo-01.jpg`, `photo-02.jpg`... | 0 files (add your first) |
 
-Uploading a file with one of these exact names **replaces** the existing
-placeholder automatically — no code edits needed.
+**Any image/video file dropped into these folders is picked up
+automatically** — the numbering above is just a friendly convention so
+items appear in a predictable order (`reel-01`, `reel-02`, ... sorted
+numerically). You don't have to fill in every number — uploading straight
+to `reel-07.mp4` works fine too. Supported extensions: `.mp4`, `.webm`,
+`.mov`, `.m4v` for video; `.jpg`, `.jpeg`, `.png`, `.webp`, `.gif` for
+images.
 
 ### How the video sections behave
 
@@ -43,40 +49,45 @@ placeholder automatically — no code edits needed.
 
 ---
 
-## Advanced: Using Different Filenames or Adding More Items
+## Advanced: How Auto-Detection Works (for reference)
 
-If you'd rather use your own filenames, or want to add/remove items, all
-image/video paths are controlled from **one file**: `src/data/media.ts`.
-That file auto-detects whether a `src` is a video (`.mp4`, `.webm`, `.mov`,
-`.m4v`) or an image and renders the right player automatically.
+Local files are discovered automatically at build time by scanning the
+`public/images/reels/`, `public/images/campaigns/`, and
+`public/images/photos/` folders — there is no array in `src/data/media.ts`
+to edit for local uploads anymore. The code (`src/data/media.ts`) just
+detects whether a file is a video (`.mp4`, `.webm`, `.mov`, `.m4v`) or an
+image and renders the right player automatically, sorted by filename.
+
+**Removing a file** works the same way in reverse: delete it from the
+GitHub folder and it disappears from the live site on the next deploy.
+
+**The only manual editing left** is the optional external-URL lists
+(`reelsMediaExternal` / `campaignsMediaExternal` in `src/data/media.ts`)
+for oversized videos hosted on Cloudinary/Bunny.net — see the section
+below.
 
 ## Folder Structure
 
 ```
 public/images/
-├── hero/                  ← Hero section background (image)
+├── hero/                  ← Hero section background (image, single file)
 │   └── hero-background.png
-├── reels/                 ← Social Media Reels (vertical 9:16 VIDEO)
+├── reels/                 ← Social Media Reels (vertical 9:16 VIDEO, auto-discovered)
 │   ├── reel-01.mp4
 │   ├── reel-02.mp4
 │   ├── reel-03.mp4
-│   └── reel-04.mp4
-├── campaigns/             ← Brand Campaigns (widescreen 16:9 VIDEO)
-│   ├── campaign-01.mp4
-│   ├── campaign-02.mp4
-│   └── campaign-03.mp4
-└── photos/                ← Photos gallery (mixed aspect ratio IMAGES)
-    ├── photo-01.jpg
-    ├── photo-02.jpg
-    ├── photo-03.jpg
-    ├── photo-04.jpg
-    ├── photo-05.jpg
-    └── photo-06.jpg
+│   ├── reel-04.mp4
+│   ├── reel-05.mp4
+│   └── reel-06.mp4
+├── campaigns/             ← Brand Campaigns (widescreen 16:9 VIDEO, auto-discovered)
+│   └── (drop campaign-01.mp4, campaign-02.mp4, ... here)
+└── photos/                ← Photos gallery (mixed aspect ratio IMAGES, auto-discovered)
+    └── (drop photo-01.jpg, photo-02.jpg, ... here)
 ```
 
 ## Step-by-Step
 
-### 1. Hero Background
+### 1. Hero Background (the one section that's still a single fixed file)
 - Drop your image into `public/images/hero/`
 - Open `src/data/media.ts` and update:
   ```ts
@@ -88,37 +99,25 @@ public/images/
   }
   ```
 
-### 2. Social Media Reels (video)
-- Drop your reel video files into `public/images/reels/`
-- Open `src/data/media.ts` and update the `reelsMedia` array:
-  ```ts
-  export const reelsMedia: MediaItem[] = [
-    { title: 'Coffee Brand Reel', src: '/images/reels/your-reel.mp4', alt: 'Description' },
-    // ...add or remove items freely
-  ]
-  ```
+### 2. Social Media Reels (video) — fully automatic
+- Just drop your reel video file into `public/images/reels/`, named the
+  next number in sequence (e.g. `reel-07.mp4`)
+- Commit on GitHub — no `media.ts` edit needed, it appears on the next
+  auto-deploy
 
-### 3. Brand Campaigns (video)
-- Drop your campaign video files into `public/images/campaigns/`
-- Open `src/data/media.ts` and update the `campaignsMedia` array:
-  ```ts
-  export const campaignsMedia: MediaItem[] = [
-    { title: 'Summer Launch', src: '/images/campaigns/your-campaign.mp4', alt: 'Description' },
-    // ...add or remove items freely
-  ]
-  ```
+### 3. Brand Campaigns (video) — fully automatic
+- Just drop your campaign video file into `public/images/campaigns/`,
+  named the next number in sequence (e.g. `campaign-01.mp4`)
+- Commit on GitHub — no `media.ts` edit needed, it appears on the next
+  auto-deploy
 
-### 4. Photos (image)
-- Drop your photos into `public/images/photos/`
-- Open `src/data/media.ts` and update the `photosMedia` array:
-  ```ts
-  export const photosMedia: MediaItem[] = [
-    { title: 'Editorial Portrait', src: '/images/photos/your-photo.jpg', alt: 'Description' },
-    // ...add or remove items freely
-  ]
-  ```
+### 4. Photos (image) — fully automatic
+- Just drop your photo into `public/images/photos/`, named the next
+  number in sequence (e.g. `photo-01.jpg`)
+- Commit on GitHub — no `media.ts` edit needed, it appears on the next
+  auto-deploy
 
-**In every section, adding or removing array entries automatically adjusts the grid — no layout code changes needed.**
+**In every section, adding or removing files automatically adjusts the grid — no code changes needed.**
 
 ## Recommended Sizes & Formats
 
@@ -178,15 +177,19 @@ streaming), and still no coding beyond pasting one line.
    ```
    https://res.cloudinary.com/your-cloud-name/video/upload/v1234567890/reel-01.mp4
    ```
-4. Open `src/data/media.ts` and paste that full URL as the `src` for the
-   matching reel/campaign entry, replacing the local `/images/...` path:
+4. Open `src/data/media.ts` and paste that full URL into the
+   `reelsMediaExternal` (or `campaignsMediaExternal`) list near the bottom
+   of the file:
    ```ts
-   { title: 'Coffee Brand Reel', src: 'https://res.cloudinary.com/your-cloud-name/video/upload/v1234567890/reel-01.mp4', alt: 'Description' },
+   export const reelsMediaExternal: MediaItem[] = [
+     { title: 'Coffee Brand Reel', src: 'https://res.cloudinary.com/your-cloud-name/video/upload/v1234567890/reel-01.mp4', alt: 'Description' },
+   ]
    ```
-5. Commit that one-line change on GitHub (edit the file directly in
-   GitHub's web UI with the pencil icon, or ask us to make the edit) — the
-   site auto-deploys and now streams the video from Cloudinary instead of
-   storing it in the repo.
+5. Commit that change on GitHub (edit the file directly in GitHub's web UI
+   with the pencil icon, or ask us to make the edit) — the site
+   auto-deploys and now streams the video from Cloudinary instead of
+   storing it in the repo. This is the **only** case where a `media.ts`
+   edit is still needed — local file uploads never require it.
 
 **Alternative:** [Bunny.net Stream](https://bunny.net/stream/) works the
 same way (upload → copy MP4/HLS URL → paste into `media.ts`) and is a good
