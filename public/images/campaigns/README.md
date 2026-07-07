@@ -25,3 +25,11 @@ campaign video files directly into this folder using GitHub's web UI
 - Want more or fewer campaigns? Add/remove entries in `src/data/media.ts` —
   the layout adjusts automatically
 - No layout code needs to change — just replace these files and push
+
+## Video too big to upload here? (GitHub's 25MB limit)
+
+GitHub's web upload rejects files over 25MB — likely for longer campaign
+videos. See **"Videos Bigger Than 25MB?"** in the root
+`IMAGE-SWAP-GUIDE.md` for two easy fixes: compress the video, or host it
+free on Cloudinary/Bunny.net and paste the link into `src/data/media.ts`
+instead of uploading the file here.

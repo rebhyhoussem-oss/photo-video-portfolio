@@ -23,6 +23,20 @@
  *  when clicked. If a .jpg/.png/.webp is used instead, it falls back to a
  *  static thumbnail with a play-button overlay.
  *
+ *  GITHUB'S 25MB UPLOAD LIMIT — VIDEOS TOO BIG?
+ *  GitHub's drag-and-drop web uploader caps files at 25MB, which many real
+ *  video files exceed. You have two options — both documented in detail in
+ *  IMAGE-SWAP-GUIDE.md at the project root:
+ *    a) Compress the video to under 25MB and upload it into public/images/
+ *       like normal (simplest, no new accounts — good for short reels).
+ *    b) Upload the video to a free external host (Cloudinary or Bunny.net
+ *       recommended) and paste the FULL https:// URL it gives you directly
+ *       as the `src` below instead of a local /images/... path. No size
+ *       limit, better streaming performance, and still just "paste a link,
+ *       no code" for the client. `src` accepts either a local path or a
+ *       full external URL — the video/image players work identically
+ *       either way.
+ *
  *  Photos: static images only (.jpg, .png, .webp) — unchanged.
  *
  *  Recommended sizes:
@@ -34,10 +48,14 @@
  */
 
 // ─── Helper: detect video files by extension ─────────────────
+// Works for local paths (/images/reels/reel-01.mp4) AND full external URLs
+// (e.g. https://res.cloudinary.com/.../reel-01.mp4) — query strings and
+// hash fragments are stripped before checking the extension, so a
+// Cloudinary/Bunny.net delivery URL with tracking params still matches.
 const VIDEO_EXTENSIONS = ['.mp4', '.webm', '.mov', '.m4v']
 export function isVideoSrc(src: string): boolean {
-  const lower = src.toLowerCase()
-  return VIDEO_EXTENSIONS.some((ext) => lower.endsWith(ext))
+  const clean = src.split('?')[0].split('#')[0].toLowerCase()
+  return VIDEO_EXTENSIONS.some((ext) => clean.endsWith(ext))
 }
 
 // ─── Hero Section ────────────────────────────────────────────

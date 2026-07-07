@@ -140,6 +140,68 @@ public/images/
 The site gracefully falls back to a styled color placeholder — no broken
 media. You can swap files in at any time without breaking the layout.
 
+## Videos Bigger Than 25MB? (GitHub's Upload Limit)
+
+GitHub's drag-and-drop web uploader **rejects files over 25MB**. Real video
+files — especially longer Brand Campaign videos — often exceed that. Here
+are your two options, easiest first:
+
+### Option A — Compress the video (simplest, no new accounts)
+
+If your video is only slightly over 25MB, compress it and upload as normal:
+
+1. Use a free tool like [Handbrake](https://handbrake.fr/) (desktop app) or
+   [FreeConvert](https://www.freeconvert.com/video-compressor) (in-browser,
+   no install) — no technical skill needed, just drag your file in and
+   download the compressed result.
+2. Target under ~20MB for reels (shorter, vertical) and ~25MB for campaigns.
+3. Upload the compressed file into `public/images/reels/` or `.../campaigns/`
+   using the normal GitHub "Add file → Upload files" steps above.
+
+**Best for:** short/medium clips where a little quality loss is fine.
+
+### Option B — Host the video externally (recommended for longer/higher-quality videos)
+
+Instead of storing the raw video file in GitHub, upload it to a free video
+hosting service and use the **link it gives you** as the `src` value in
+`src/data/media.ts` — no file size limit, faster loading (proper video
+streaming), and still no coding beyond pasting one line.
+
+**Recommended: [Cloudinary](https://cloudinary.com/users/register/free)**
+(free tier includes 25 video credits/month, generous for a portfolio site)
+
+1. Create a free Cloudinary account.
+2. In the Cloudinary dashboard, click **Media Library → Upload** and upload
+   your video file (no size limit on the free tier for individual files
+   this size).
+3. Click the uploaded video, then copy its **delivery URL** — it looks like:
+   ```
+   https://res.cloudinary.com/your-cloud-name/video/upload/v1234567890/reel-01.mp4
+   ```
+4. Open `src/data/media.ts` and paste that full URL as the `src` for the
+   matching reel/campaign entry, replacing the local `/images/...` path:
+   ```ts
+   { title: 'Coffee Brand Reel', src: 'https://res.cloudinary.com/your-cloud-name/video/upload/v1234567890/reel-01.mp4', alt: 'Description' },
+   ```
+5. Commit that one-line change on GitHub (edit the file directly in
+   GitHub's web UI with the pencil icon, or ask us to make the edit) — the
+   site auto-deploys and now streams the video from Cloudinary instead of
+   storing it in the repo.
+
+**Alternative:** [Bunny.net Stream](https://bunny.net/stream/) works the
+same way (upload → copy MP4/HLS URL → paste into `media.ts`) and is a good
+option if you outgrow Cloudinary's free tier or want purpose-built video
+CDN streaming.
+
+**Why this works with the existing site:** `src/data/media.ts` doesn't care
+whether `src` is a local file path or a full `https://...` URL — both
+render correctly, since the code just checks the file extension. You can
+mix and match: some reels stored locally, others hosted externally.
+
+**Best for:** longer campaign videos, higher-quality/larger files, or if
+you plan to update videos often (no need to push to GitHub each time —
+just replace the file on Cloudinary and update the URL once).
+
 ## Contact Info
 
 The phone number and email in the footer are hardcoded in `src/sections/Footer.tsx`.
