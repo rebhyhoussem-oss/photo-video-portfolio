@@ -1,9 +1,40 @@
 # How to Replace Images with Your Real Content
 
-All images are controlled from **one file**: `src/data/media.ts`.
-No layout code needs to change — just drop in your files and update the paths.
+**The simplest way:** just name your files exactly as listed below and
+upload them into the matching folder on GitHub. If you use the exact
+filenames, **you don't need to edit any code at all** — the site will pick
+them up automatically on the next deploy.
+
+Each folder also has its own `README.md` with the same instructions, in
+case you land there directly from GitHub's file browser.
+
+## How to Upload (no coding needed)
+
+1. Go to the repo on GitHub: `github.com/rebhyhoussem-oss/photo-video-portfolio`
+2. Open the folder you want (e.g. `public/images/reels`)
+3. Click **"Add file" → "Upload files"**
+4. Drag in your image(s), named exactly as shown in the table below
+5. Click **"Commit changes"** — the live site updates automatically within
+   about a minute (no further steps needed)
+
+## Exact Filenames Expected
+
+| Folder | Files to upload |
+|---|---|
+| `public/images/hero/` | `hero-background.png` |
+| `public/images/reels/` | `reel-01.jpg`, `reel-02.jpg`, `reel-03.jpg`, `reel-04.jpg` |
+| `public/images/campaigns/` | `campaign-01.jpg`, `campaign-02.jpg`, `campaign-03.jpg` |
+| `public/images/photos/` | `photo-01.jpg`, `photo-02.jpg`, `photo-03.jpg`, `photo-04.jpg`, `photo-05.jpg`, `photo-06.jpg` |
+
+Uploading a file with one of these exact names **replaces** the existing
+placeholder automatically — no code edits needed.
 
 ---
+
+## Advanced: Using Different Filenames or Adding More Items
+
+If you'd rather use your own filenames, or want to add/remove items, all
+image paths are controlled from **one file**: `src/data/media.ts`.
 
 ## Folder Structure
 
