@@ -95,3 +95,4 @@ You can swap files in at any time without breaking the layout.
 
 The phone number and email in the footer are hardcoded in `src/sections/Footer.tsx`.
 To update them, edit the `href="tel:..."` and `href="mailto:..."` values there.
+<!-- auto-deploy test -->
