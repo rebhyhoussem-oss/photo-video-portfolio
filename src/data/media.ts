@@ -5,26 +5,40 @@
  *
  *  HOW TO SWAP IN REAL CONTENT:
  *
- *  1. Drop your images/video-thumbnails into the matching folder
- *     under  public/images/
- *       public/images/hero/        → hero background
- *       public/images/reels/       → Social Media Reels thumbnails
- *       public/images/campaigns/   → Brand Campaigns thumbnails
- *       public/images/photos/      → Photos gallery images
+ *  1. Drop your files into the matching folder under public/images/
+ *       public/images/hero/        → hero background (image)
+ *       public/images/reels/       → Social Media Reels (VIDEO files, e.g. .mp4)
+ *       public/images/campaigns/   → Brand Campaigns (VIDEO files, e.g. .mp4)
+ *       public/images/photos/      → Photos gallery (image files)
  *
  *  2. Update the `src` paths below to match your filenames.
- *     Example:  src: '/images/reels/reel-01.jpg'
+ *     Example:  src: '/images/reels/reel-01.mp4'
  *
- *  3. That's it — no layout code needs to change.
+ *  3. That's it — no layout code needs to change. The Reels and Campaigns
+ *     cards auto-detect video vs. image based on the file extension
+ *     (see `isVideoSrc` below) and render a <video> or <img> accordingly.
  *
- *  Supported formats: .jpg, .png, .webp (use .webp for best performance)
+ *  Reels & Campaigns: use real video files (.mp4, .webm, .mov). Reels
+ *  autoplay muted + loop on hover/tap; Campaigns play inline with controls
+ *  when clicked. If a .jpg/.png/.webp is used instead, it falls back to a
+ *  static thumbnail with a play-button overlay.
+ *
+ *  Photos: static images only (.jpg, .png, .webp) — unchanged.
+ *
  *  Recommended sizes:
  *     Hero background:      1920×1080 or wider
- *     Reels thumbnails:     1080×1920 (9:16 vertical, like real reels)
- *     Campaign thumbnails:  1600×900 (16:9 widescreen)
+ *     Reels video:          1080×1920 (9:16 vertical, like real reels)
+ *     Campaign video:       1600×900 (16:9 widescreen)
  *     Photos:               1200×1500 minimum (any aspect ratio works)
  * ============================================================
  */
+
+// ─── Helper: detect video files by extension ─────────────────
+const VIDEO_EXTENSIONS = ['.mp4', '.webm', '.mov', '.m4v']
+export function isVideoSrc(src: string): boolean {
+  const lower = src.toLowerCase()
+  return VIDEO_EXTENSIONS.some((ext) => lower.endsWith(ext))
+}
 
 // ─── Hero Section ────────────────────────────────────────────
 export const heroMedia = {
@@ -42,20 +56,22 @@ export type MediaItem = {
 }
 
 // ─── Section 1: Social Media Reels ───────────────────────────
-// Vertical (9:16) thumbnails — add/remove items freely, the grid adapts.
+// Vertical (9:16) video files — autoplay muted+loop on hover. Add/remove
+// items freely, the grid adapts.
 export const reelsMedia: MediaItem[] = [
-  { title: 'Reel — Coffee Brand', src: '/images/reels/reel-01.jpg', alt: 'Social media reel thumbnail 1' },
-  { title: 'Reel — Fitness Studio', src: '/images/reels/reel-02.jpg', alt: 'Social media reel thumbnail 2' },
-  { title: 'Reel — Restaurant Launch', src: '/images/reels/reel-03.jpg', alt: 'Social media reel thumbnail 3' },
-  { title: 'Reel — Fashion Drop', src: '/images/reels/reel-04.jpg', alt: 'Social media reel thumbnail 4' },
+  { title: 'Reel — Coffee Brand', src: '/images/reels/reel-01.mp4', alt: 'Social media reel video 1' },
+  { title: 'Reel — Fitness Studio', src: '/images/reels/reel-02.mp4', alt: 'Social media reel video 2' },
+  { title: 'Reel — Restaurant Launch', src: '/images/reels/reel-03.mp4', alt: 'Social media reel video 3' },
+  { title: 'Reel — Fashion Drop', src: '/images/reels/reel-04.mp4', alt: 'Social media reel video 4' },
 ]
 
 // ─── Section 2: Brand Campaigns ──────────────────────────────
-// Widescreen (16:9) thumbnails — add/remove items freely, the grid adapts.
+// Widescreen (16:9) video files — plays inline with controls on click.
+// Add/remove items freely, the grid adapts.
 export const campaignsMedia: MediaItem[] = [
-  { title: 'Summer Collection Launch', src: '/images/campaigns/campaign-01.jpg', alt: 'Brand campaign thumbnail 1' },
-  { title: 'Product Reveal Film', src: '/images/campaigns/campaign-02.jpg', alt: 'Brand campaign thumbnail 2' },
-  { title: 'Retail Grand Opening', src: '/images/campaigns/campaign-03.jpg', alt: 'Brand campaign thumbnail 3' },
+  { title: 'Summer Collection Launch', src: '/images/campaigns/campaign-01.mp4', alt: 'Brand campaign video 1' },
+  { title: 'Product Reveal Film', src: '/images/campaigns/campaign-02.mp4', alt: 'Brand campaign video 2' },
+  { title: 'Retail Grand Opening', src: '/images/campaigns/campaign-03.mp4', alt: 'Brand campaign video 3' },
 ]
 
 // ─── Section 3: Photos ────────────────────────────────────────

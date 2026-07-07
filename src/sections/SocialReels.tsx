@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { PlayIcon } from '@/icons'
-import { reelsMedia } from '@/data/media'
+import { reelsMedia, isVideoSrc } from '@/data/media'
 import type { MediaItem } from '@/data/media'
 
 const containerVariants = {
@@ -19,37 +19,70 @@ const itemVariants = {
 }
 
 function ReelCard({ item }: { item: MediaItem }) {
-  const [imgError, setImgError] = useState(false)
-  const hasImage = item.src && !imgError
+  const [mediaError, setMediaError] = useState(false)
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const hasMedia = item.src && !mediaError
+  const isVideo = isVideoSrc(item.src)
+
+  const playPreview = () => {
+    const v = videoRef.current
+    if (!v) return
+    v.currentTime = 0
+    v.play().catch(() => {})
+  }
+  const stopPreview = () => {
+    const v = videoRef.current
+    if (!v) return
+    v.pause()
+    v.currentTime = 0
+  }
 
   return (
     <motion.div
       variants={itemVariants}
       className="group relative aspect-[9/16] cursor-pointer overflow-hidden rounded-2xl bg-bg-card"
+      onMouseEnter={isVideo ? playPreview : undefined}
+      onMouseLeave={isVideo ? stopPreview : undefined}
+      onClick={isVideo ? playPreview : undefined}
     >
-      {hasImage ? (
-        <img
-          src={item.src}
-          alt={item.alt}
-          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-          loading="lazy"
-          onError={() => setImgError(true)}
-        />
+      {hasMedia ? (
+        isVideo ? (
+          <video
+            ref={videoRef}
+            src={item.src}
+            muted
+            loop
+            playsInline
+            preload="metadata"
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+            onError={() => setMediaError(true)}
+          />
+        ) : (
+          <img
+            src={item.src}
+            alt={item.alt}
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+            loading="lazy"
+            onError={() => setMediaError(true)}
+          />
+        )
       ) : (
         <div className="flex h-full w-full items-center justify-center bg-teal/10 transition-transform duration-500 group-hover:scale-105">
           <div className="h-14 w-14 rounded-full border-2 border-teal/30" />
         </div>
       )}
 
-      {/* Play button */}
-      <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/90 text-teal shadow-lg">
-          <PlayIcon className="h-6 w-6 translate-x-0.5" />
+      {/* Play button (image cards only — video cards autoplay preview on hover instead) */}
+      {!isVideo && (
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/90 text-teal shadow-lg">
+            <PlayIcon className="h-6 w-6 translate-x-0.5" />
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Label */}
-      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-4">
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-4">
         <p className="text-sm font-semibold text-white">{item.title}</p>
       </div>
     </motion.div>
