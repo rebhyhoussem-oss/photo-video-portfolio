@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import { motion } from 'framer-motion'
-import { PlayIcon } from '@/icons'
+import { PlayIcon, MuteIcon, UnmuteIcon } from '@/icons'
 import { reelsMedia, isVideoSrc } from '@/data/media'
 import type { MediaItem } from '@/data/media'
 
@@ -20,6 +20,7 @@ const itemVariants = {
 
 function ReelCard({ item }: { item: MediaItem }) {
   const [mediaError, setMediaError] = useState(false)
+  const [muted, setMuted] = useState(true)
   const videoRef = useRef<HTMLVideoElement>(null)
   const hasMedia = item.src && !mediaError
   const isVideo = isVideoSrc(item.src)
@@ -35,6 +36,11 @@ function ReelCard({ item }: { item: MediaItem }) {
     if (!v) return
     v.pause()
     v.currentTime = 0
+    setMuted(true)
+  }
+  const toggleMute = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    setMuted((m) => !m)
   }
 
   return (
@@ -50,7 +56,7 @@ function ReelCard({ item }: { item: MediaItem }) {
           <video
             ref={videoRef}
             src={item.src}
-            muted
+            muted={muted}
             loop
             playsInline
             preload="metadata"
@@ -79,6 +85,18 @@ function ReelCard({ item }: { item: MediaItem }) {
             <PlayIcon className="h-6 w-6 translate-x-0.5" />
           </div>
         </div>
+      )}
+
+      {/* Mute/unmute toggle (video cards only) */}
+      {isVideo && hasMedia && (
+        <button
+          type="button"
+          aria-label={muted ? 'Unmute video' : 'Mute video'}
+          onClick={toggleMute}
+          className="absolute bottom-3 right-3 flex h-9 w-9 items-center justify-center rounded-full bg-black/50 text-white opacity-0 backdrop-blur-sm transition-opacity duration-300 group-hover:opacity-100 hover:bg-black/70"
+        >
+          {muted ? <MuteIcon className="h-4 w-4" /> : <UnmuteIcon className="h-4 w-4" />}
+        </button>
       )}
     </motion.div>
   )
