@@ -69,7 +69,7 @@ function CampaignCard({ item }: { item: MediaItem }) {
 
       {/* Play button */}
       {!playing && (
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100 [@media(hover:none)]:opacity-100">
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/90 text-tangerine shadow-lg">
             <PlayIcon className="h-7 w-7 translate-x-0.5" />
           </div>

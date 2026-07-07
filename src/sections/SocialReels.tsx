@@ -80,7 +80,7 @@ function ReelCard({ item }: { item: MediaItem }) {
 
       {/* Play button (image cards only — video cards autoplay preview on hover instead) */}
       {!isVideo && (
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100 [@media(hover:none)]:opacity-100">
           <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/90 text-teal shadow-lg">
             <PlayIcon className="h-6 w-6 translate-x-0.5" />
           </div>
@@ -93,7 +93,7 @@ function ReelCard({ item }: { item: MediaItem }) {
           type="button"
           aria-label={muted ? 'Unmute video' : 'Mute video'}
           onClick={toggleMute}
-          className="absolute bottom-3 right-3 flex h-9 w-9 items-center justify-center rounded-full bg-black/50 text-white opacity-0 backdrop-blur-sm transition-opacity duration-300 group-hover:opacity-100 hover:bg-black/70"
+          className="absolute bottom-3 right-3 flex h-9 w-9 items-center justify-center rounded-full bg-black/50 text-white opacity-0 backdrop-blur-sm transition-opacity duration-300 group-hover:opacity-100 hover:bg-black/70 [@media(hover:none)]:opacity-100"
         >
           {muted ? <MuteIcon className="h-4 w-4" /> : <UnmuteIcon className="h-4 w-4" />}
         </button>
