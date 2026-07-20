@@ -21,6 +21,7 @@ const itemVariants = {
 function CampaignCard({ item }: { item: MediaItem }) {
   const [mediaError, setMediaError] = useState(false)
   const [playing, setPlaying] = useState(false)
+  const [loaded, setLoaded] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
   const hasMedia = item.src && !mediaError
   const isVideo = isVideoSrc(item.src)
@@ -41,25 +42,41 @@ function CampaignCard({ item }: { item: MediaItem }) {
     >
       {hasMedia ? (
         isVideo ? (
-          <video
-            ref={videoRef}
-            src={item.src}
-            controls={playing}
-            playsInline
-            preload="metadata"
-            className="h-full w-full object-cover"
-            onError={() => setMediaError(true)}
-            onPause={() => setPlaying(false)}
-            onEnded={() => setPlaying(false)}
-          />
+          <>
+            <video
+              ref={videoRef}
+              src={item.src}
+              controls={playing}
+              playsInline
+              preload="none"
+              className="h-full w-full object-cover"
+              onError={() => setMediaError(true)}
+              onLoadedData={() => setLoaded(true)}
+              onPause={() => setPlaying(false)}
+              onEnded={() => setPlaying(false)}
+            />
+            {!loaded && (
+              <div className="absolute inset-0 flex h-full w-full animate-pulse items-center justify-center bg-bg-card">
+                <div className="h-10 w-10 rounded-full border-2 border-tangerine/30" />
+              </div>
+            )}
+          </>
         ) : (
-          <img
-            src={item.src}
-            alt={item.alt}
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-            loading="lazy"
-            onError={() => setMediaError(true)}
-          />
+          <>
+            <img
+              src={item.src}
+              alt={item.alt}
+              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+              loading="lazy"
+              onLoad={() => setLoaded(true)}
+              onError={() => setMediaError(true)}
+            />
+            {!loaded && (
+              <div className="absolute inset-0 flex h-full w-full animate-pulse items-center justify-center bg-bg-card">
+                <div className="h-10 w-10 rounded-full border-2 border-tangerine/30" />
+              </div>
+            )}
+          </>
         )
       ) : (
         <div className="flex h-full w-full items-center justify-center bg-tangerine/10 transition-transform duration-500 group-hover:scale-105">

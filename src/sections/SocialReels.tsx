@@ -21,6 +21,7 @@ const itemVariants = {
 function ReelCard({ item }: { item: MediaItem }) {
   const [mediaError, setMediaError] = useState(false)
   const [muted, setMuted] = useState(true)
+  const [loaded, setLoaded] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
   const hasMedia = item.src && !mediaError
   const isVideo = isVideoSrc(item.src)
@@ -53,24 +54,41 @@ function ReelCard({ item }: { item: MediaItem }) {
     >
       {hasMedia ? (
         isVideo ? (
-          <video
-            ref={videoRef}
-            src={item.src}
-            muted={muted}
-            loop
-            playsInline
-            preload="metadata"
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-            onError={() => setMediaError(true)}
-          />
+          <>
+            <video
+              ref={videoRef}
+              src={item.src}
+              muted={muted}
+              autoPlay
+              loop
+              playsInline
+              preload="none"
+              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+              onError={() => setMediaError(true)}
+              onLoadedData={() => setLoaded(true)}
+            />
+            {!loaded && (
+              <div className="absolute inset-0 flex h-full w-full animate-pulse items-center justify-center bg-bg-card">
+                <div className="h-10 w-10 rounded-full border-2 border-teal/30" />
+              </div>
+            )}
+          </>
         ) : (
-          <img
-            src={item.src}
-            alt={item.alt}
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-            loading="lazy"
-            onError={() => setMediaError(true)}
-          />
+          <>
+            <img
+              src={item.src}
+              alt={item.alt}
+              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+              loading="lazy"
+              onLoad={() => setLoaded(true)}
+              onError={() => setMediaError(true)}
+            />
+            {!loaded && (
+              <div className="absolute inset-0 flex h-full w-full animate-pulse items-center justify-center bg-bg-card">
+                <div className="h-10 w-10 rounded-full border-2 border-teal/30" />
+              </div>
+            )}
+          </>
         )
       ) : (
         <div className="flex h-full w-full items-center justify-center bg-teal/10 transition-transform duration-500 group-hover:scale-105">
