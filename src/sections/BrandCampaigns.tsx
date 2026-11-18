@@ -22,6 +22,7 @@ function CampaignCard({ item }: { item: MediaItem }) {
   const [mediaError, setMediaError] = useState(false)
   const [playing, setPlaying] = useState(false)
   const [loaded, setLoaded] = useState(false)
+  const [started, setStarted] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
   const hasMedia = item.src && !mediaError
   const isVideo = isVideoSrc(item.src)
@@ -46,7 +47,6 @@ function CampaignCard({ item }: { item: MediaItem }) {
             <video
               ref={videoRef}
               src={item.src}
-              poster={item.poster}
               aria-label={item.alt}
               controls={playing}
               playsInline
@@ -54,9 +54,21 @@ function CampaignCard({ item }: { item: MediaItem }) {
               className="h-full w-full object-cover"
               onError={() => setMediaError(true)}
               onLoadedData={() => setLoaded(true)}
+              onPlaying={() => setStarted(true)}
               onPause={() => setPlaying(false)}
               onEnded={() => setPlaying(false)}
             />
+            {/* Preview frame as a real image (object-cover = never stretched), hidden once playback starts */}
+            {item.poster && !started && (
+              <img
+                src={item.poster}
+                alt=""
+                aria-hidden="true"
+                loading="lazy"
+                decoding="async"
+                className="pointer-events-none absolute inset-0 h-full w-full object-cover"
+              />
+            )}
             {/* Only show the loading shimmer when there is no preview frame */}
             {!loaded && !item.poster && (
               <div className="absolute inset-0 flex h-full w-full animate-pulse items-center justify-center bg-bg-card">

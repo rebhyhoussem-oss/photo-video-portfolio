@@ -22,6 +22,7 @@ function ReelCard({ item }: { item: MediaItem }) {
   const [mediaError, setMediaError] = useState(false)
   const [muted, setMuted] = useState(true)
   const [loaded, setLoaded] = useState(false)
+  const [started, setStarted] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
   const hasMedia = item.src && !mediaError
   const isVideo = isVideoSrc(item.src)
@@ -64,7 +65,6 @@ function ReelCard({ item }: { item: MediaItem }) {
           <video
             ref={videoRef}
             src={item.src}
-            poster={item.poster}
             aria-label={item.alt}
             muted={muted}
             loop
@@ -73,6 +73,7 @@ function ReelCard({ item }: { item: MediaItem }) {
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
             onError={() => setMediaError(true)}
             onLoadedData={() => setLoaded(true)}
+            onPlaying={() => setStarted(true)}
           />
         ) : (
           <img
@@ -87,6 +88,18 @@ function ReelCard({ item }: { item: MediaItem }) {
         )
       ) : (
         <div className="flex h-full w-full items-center justify-center bg-teal/10" />
+      )}
+
+      {/* Preview frame as a real image (object-cover = never stretched), hidden once the video plays */}
+      {isVideo && hasMedia && item.poster && (
+        <img
+          src={item.poster}
+          alt=""
+          aria-hidden="true"
+          loading="lazy"
+          decoding="async"
+          className={`pointer-events-none absolute inset-0 h-full w-full object-cover transition-opacity duration-500 group-hover:scale-105 ${started ? 'opacity-0' : 'opacity-100'}`}
+        />
       )}
 
       {hasMedia && showPlaceholder && (
