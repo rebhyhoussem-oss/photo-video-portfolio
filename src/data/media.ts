@@ -66,7 +66,37 @@ export type MediaItem = {
   title: string
   src: string
   alt: string
+  /** Preview frame shown before a video plays (public/images/posters/<same-name>.jpg) */
+  poster?: string
+  /** Optional visible label, only set when a real title exists in TITLES below */
+  label?: string
 }
+
+// ─── Optional real titles, keyed by file name without extension ───
+// Add an entry here to give a video/photo a proper name. Names listed
+// here are shown on Brand Campaign cards and used for screen readers.
+export const TITLES: Record<string, string> = {
+  'reel-02': 'Eterno',
+  'reel-03': 'Jeep Wrangler',
+  'campaign-04': 'Al Sharqueya',
+  'campaign-06': 'Miniso × Stranger Things',
+}
+
+// ─── Posters: auto-discovered from public/images/posters/ ───
+// Each video gets a preview frame with the same base name, e.g.
+// reels/reel-01.mp4 → posters/reel-01.jpg
+const postersGlob = import.meta.glob('/public/images/posters/*', {
+  eager: true,
+  query: '?url',
+  import: 'default',
+}) as Record<string, string>
+
+const posterByName: Record<string, string> = Object.fromEntries(
+  Object.keys(postersGlob).map((path) => [
+    (path.split('/').pop() ?? path).replace(/\.[^.]+$/, ''),
+    path.replace(/^\/public/, ''),
+  ]),
+)
 
 // ─── Helper: turn "reel-01.mp4" into "Reel 01" for a11y/title text ───
 function titleFromFilename(filename: string): string {
@@ -93,11 +123,15 @@ function discoverLocalMedia(
     .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
     .map((path) => {
       const filename = path.split('/').pop() ?? path
-      const title = titleFromFilename(filename)
+      const base = filename.replace(/\.[^.]+$/, '')
+      const label = TITLES[base]
+      const title = label ?? titleFromFilename(filename)
       return {
         title,
         src: path.replace(/^\/public/, ''),
         alt: `${altPrefix} — ${title}`,
+        poster: posterByName[base],
+        label,
       }
     })
 }
@@ -105,7 +139,7 @@ function discoverLocalMedia(
 // ─── Hero Section ────────────────────────────────────────────
 export const heroMedia = {
   background: {
-    src: '/images/hero/hero-background.png',
+    src: '/images/hero/hero-background.jpg',
     alt: 'Videographer flying a drone at dusk in an urban setting',
   },
 }

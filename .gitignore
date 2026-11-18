@@ -4,3 +4,4 @@ dist
 verdent-design
 vite-react-tailwind
 .DS_Store
+.media-build

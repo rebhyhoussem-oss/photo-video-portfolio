@@ -36,6 +36,7 @@ function PhotoCard({ item, index }: { item: MediaItem; index: number }) {
           alt={item.alt}
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
           loading="lazy"
+          decoding="async"
           onError={() => setImgError(true)}
         />
       ) : (

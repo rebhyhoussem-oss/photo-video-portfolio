@@ -46,6 +46,8 @@ function CampaignCard({ item }: { item: MediaItem }) {
             <video
               ref={videoRef}
               src={item.src}
+              poster={item.poster}
+              aria-label={item.alt}
               controls={playing}
               playsInline
               preload="none"
@@ -55,7 +57,8 @@ function CampaignCard({ item }: { item: MediaItem }) {
               onPause={() => setPlaying(false)}
               onEnded={() => setPlaying(false)}
             />
-            {!loaded && (
+            {/* Only show the loading shimmer when there is no preview frame */}
+            {!loaded && !item.poster && (
               <div className="absolute inset-0 flex h-full w-full animate-pulse items-center justify-center bg-bg-card">
                 <div className="h-10 w-10 rounded-full border-2 border-tangerine/30" />
               </div>
@@ -84,9 +87,16 @@ function CampaignCard({ item }: { item: MediaItem }) {
         </div>
       )}
 
-      {/* Play button */}
+      {/* Title (only for videos with a real name in TITLES) */}
+      {!playing && item.label && (
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent px-4 pb-3 pt-10">
+          <p className="text-sm font-bold text-white">{item.label}</p>
+        </div>
+      )}
+
+      {/* Play button: always visible over the preview frame */}
       {!playing && (
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100 [@media(hover:none)]:opacity-100">
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/90 text-tangerine shadow-lg">
             <PlayIcon className="h-7 w-7 translate-x-0.5" />
           </div>

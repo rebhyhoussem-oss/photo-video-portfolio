@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { PlayIcon, MuteIcon, UnmuteIcon } from '@/icons'
 import { reelsMedia, isVideoSrc } from '@/data/media'
@@ -26,77 +26,76 @@ function ReelCard({ item }: { item: MediaItem }) {
   const hasMedia = item.src && !mediaError
   const isVideo = isVideoSrc(item.src)
 
-  const playPreview = () => {
+  // Only download + play a reel while it is on screen; pause it when it
+  // scrolls away. Keeps the page light instead of loading every reel at once.
+  useEffect(() => {
     const v = videoRef.current
-    if (!v) return
-    v.currentTime = 0
-    v.play().catch(() => {})
-  }
-  const stopPreview = () => {
-    const v = videoRef.current
-    if (!v) return
-    v.pause()
-    v.currentTime = 0
-    setMuted(true)
-  }
+    if (!v || !isVideo) return
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          v.play().catch(() => {})
+        } else {
+          v.pause()
+          setMuted(true)
+        }
+      },
+      { threshold: 0.35 },
+    )
+    io.observe(v)
+    return () => io.disconnect()
+  }, [isVideo, hasMedia])
+
   const toggleMute = (e: React.MouseEvent) => {
     e.stopPropagation()
     setMuted((m) => !m)
   }
 
+  const showPlaceholder = !loaded && !item.poster
+
   return (
     <motion.div
       variants={itemVariants}
-      className="group relative aspect-[9/16] cursor-pointer overflow-hidden rounded-2xl bg-bg-card"
-      onMouseEnter={isVideo ? playPreview : undefined}
-      onMouseLeave={isVideo ? stopPreview : undefined}
-      onClick={isVideo ? playPreview : undefined}
+      className="group relative aspect-[9/16] w-[calc(50%-0.5rem)] cursor-pointer overflow-hidden rounded-2xl bg-bg-card sm:w-[calc(33.333%-0.67rem)] md:w-[calc(33.333%-0.84rem)]"
+      onClick={isVideo ? () => setMuted((m) => !m) : undefined}
     >
       {hasMedia ? (
         isVideo ? (
-          <>
-            <video
-              ref={videoRef}
-              src={item.src}
-              muted={muted}
-              autoPlay
-              loop
-              playsInline
-              preload="none"
-              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-              onError={() => setMediaError(true)}
-              onLoadedData={() => setLoaded(true)}
-            />
-            {!loaded && (
-              <div className="absolute inset-0 flex h-full w-full animate-pulse items-center justify-center bg-bg-card">
-                <div className="h-10 w-10 rounded-full border-2 border-teal/30" />
-              </div>
-            )}
-          </>
+          <video
+            ref={videoRef}
+            src={item.src}
+            poster={item.poster}
+            aria-label={item.alt}
+            muted={muted}
+            loop
+            playsInline
+            preload="none"
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+            onError={() => setMediaError(true)}
+            onLoadedData={() => setLoaded(true)}
+          />
         ) : (
-          <>
-            <img
-              src={item.src}
-              alt={item.alt}
-              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-              loading="lazy"
-              onLoad={() => setLoaded(true)}
-              onError={() => setMediaError(true)}
-            />
-            {!loaded && (
-              <div className="absolute inset-0 flex h-full w-full animate-pulse items-center justify-center bg-bg-card">
-                <div className="h-10 w-10 rounded-full border-2 border-teal/30" />
-              </div>
-            )}
-          </>
+          <img
+            src={item.src}
+            alt={item.alt}
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+            loading="lazy"
+            decoding="async"
+            onLoad={() => setLoaded(true)}
+            onError={() => setMediaError(true)}
+          />
         )
       ) : (
-        <div className="flex h-full w-full items-center justify-center bg-teal/10 transition-transform duration-500 group-hover:scale-105">
-          <div className="h-14 w-14 rounded-full border-2 border-teal/30" />
+        <div className="flex h-full w-full items-center justify-center bg-teal/10" />
+      )}
+
+      {hasMedia && showPlaceholder && (
+        <div className="absolute inset-0 flex h-full w-full animate-pulse items-center justify-center bg-bg-card">
+          <div className="h-10 w-10 rounded-full border-2 border-teal/30" />
         </div>
       )}
 
-      {/* Play button (image cards only — video cards autoplay preview on hover instead) */}
+      {/* Play button (image cards only) */}
       {!isVideo && (
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100 [@media(hover:none)]:opacity-100">
           <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/90 text-teal shadow-lg">
@@ -139,7 +138,7 @@ export function SocialReels() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: '-80px' }}
-          className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 md:gap-5"
+          className="mx-auto flex max-w-4xl flex-wrap justify-center gap-4 md:gap-5"
         >
           {reelsMedia.map((item) => (
             <ReelCard key={item.title} item={item} />
